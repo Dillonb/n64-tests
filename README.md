@@ -4,7 +4,7 @@ A WIP N64 test suite designed for young emulators
 ## Building
 All tests are written for [this fork of bass](https://github.com/ARM9/bass).
 
-They also require [chksum64]https://github.com/DragonMinded/libdragon/blob/trunk/tools/chksum64.c) to boot.
+They also require [chksum64](https://github.com/DragonMinded/libdragon/blob/trunk/tools/chksum64.c) to boot.
 
 To build, simply run `make` after both of these tools have been placed on the PATH. You'll probably have to compile them both yourself, I doubt they'd be in your distribution's package manager.
 
