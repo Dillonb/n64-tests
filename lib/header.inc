@@ -21,7 +21,7 @@
   dd 0 // UNUSED
 
 // PROGRAM TITLE (27 Byte ASCII String, Use Spaces For Unused Bytes)
-  db "HELLO WORLD 32BPP CPU DEMO "
+  db "Dillon's N64 Tests         "
 //   "123456789012345678901234567"
 
 // DEVELOPER ID CODE 

@@ -4,7 +4,7 @@ output "basic.z64", create
 fill 1052672
 
 origin $00000000
-base   $80000000
+base $80000000
 
 constant rtest_failed(30)
 
@@ -13,11 +13,17 @@ include "lib/header.inc"
 insert "lib/bootcode.bin"
 
 Start:
+    N64_INIT()
     li rtest_failed, 0
     jal test1
       nop
+    jal test2
+      nop
+    jal test3
+      nop
     // all passed
     j Hang
+      nop
 
 Hang:
     j Hang
@@ -51,6 +57,24 @@ test2_stage2:
       nop
 
 test2_failed:
+    li rtest_failed, 2
+    j Hang
+      nop
+
+test3:
+    andi r2, r2, 0
+    beql r0, r0, test3_stage2
+      addi r2, r2, 0xFF
+      
+test3_stage2:
+    andi r1, r1, 0
+    addi r1, r1, 0xFF
+    bne r1, r2, test3_failed
+      nop
+    jr ra
+      nop
+
+test3_failed:
     li rtest_failed, 2
     j Hang
       nop
