@@ -8,3 +8,6 @@ For now, the tests have no graphical output. Run the tests, and when they start 
 
 ### Test 1 - Is r0 pinned to 0?
 This test attempts to load 0xFF into r0 and fails if the load succeeds.
+
+### Test 2 - does J execute the delay slot before jumping?
+This test sets r2 in a delay slot, and fails if the register is not set.

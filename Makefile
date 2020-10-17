@@ -1,5 +1,5 @@
 %.z64: %.asm
-	bass -o $@ $<
+	bass $<
 
 all: *.z64
 

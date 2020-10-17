@@ -36,3 +36,21 @@ test1_failed:
     li rtest_failed, 1
     j Hang
       nop
+
+test2:
+    andi r2, r2, 0
+    j test2_stage2
+      addi r2, r2, 0xFF
+      
+test2_stage2:
+    andi r1, r1, 0
+    addi r1, r1, 0xFF
+    bne r1, r2, test2_failed
+      nop
+    jr ra
+      nop
+
+test2_failed:
+    li rtest_failed, 2
+    j Hang
+      nop
