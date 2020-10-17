@@ -27,6 +27,8 @@ Start:
       nop
     jal test3
       nop
+    jal test4
+      nop
     // all passed
     j Complete
       nop
@@ -90,6 +92,8 @@ test3:
     andi r2, r2, 0
     beql r0, r0, test3_stage2
       addi r2, r2, 0xFF
+    j test3_failed // Should never end up here
+      nop
       
 test3_stage2:
     andi r1, r1, 0
@@ -100,7 +104,25 @@ test3_stage2:
       nop
 
 test3_failed:
-    li rtest_failed, 2
+    li rtest_failed, 3
+    j Complete
+      nop
+
+test4:
+    li r2, 0
+    bnel r0, r0, test4_stage2
+      addi r2, r2, 0xFF
+    bne r2, r0, test4_failed
+      nop
+    jr ra
+      nop
+
+test4_stage2:
+    j test4_failed // Should never end up here
+      nop
+
+test4_failed:
+    li rtest_failed, 4
     j Complete
       nop
 

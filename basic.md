@@ -14,3 +14,6 @@ This test sets r2 in a delay slot, and fails if the register is not set.
 
 ### Test 3 - does beql execute the delay slot if the branch is taken?
 This test sets r2 in a delay slot, and fails if the register is not set.
+
+### Test 4 - does beql skip the delay slot if the branch is not taken?
+This test sets r2 in a delay slot, and fails if the register is set.
