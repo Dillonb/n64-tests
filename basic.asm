@@ -29,6 +29,8 @@ Start:
       nop
     jal test4
       nop
+    jal test5
+      nop
     // all passed
     j Complete
       nop
@@ -123,6 +125,21 @@ test4_stage2:
 
 test4_failed:
     li rtest_failed, 4
+    j Complete
+      nop
+
+test5:
+    li r2, 0xFFFF
+    dsll r2, 16
+    ori r2, 0xFFFF
+    daddi r2, r2, 1
+    beqz r2, test5_failed
+      nop
+    jr ra
+      nop
+
+test5_failed:
+    li rtest_failed, 5
     j Complete
       nop
 
