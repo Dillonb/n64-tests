@@ -9,7 +9,15 @@ They also require [chksum64](https://github.com/DragonMinded/libdragon/blob/trun
 To build, simply run `make` after both of these tools have been placed on the PATH. You'll probably have to compile them both yourself, I doubt they'd be in your distribution's package manager.
 
 ## Running
-This project is still far too young to worry about running these yet. Come back later.
+### Basic test
+#### Mature emulators
+Run the test, it will most likely pass if your emulator is mature enough to boot games.
+
+#### Young emulators
+If your emulator is very young, you can skip the boot process and start executing the tests by jumping to the PC value specified in the header. This should be `0x80001000`. If at any point the value of r30 changes to a non-zero value, that means a test has failed. If the rom starts writing to VI registers while r30 is still zero, that means you've passed the tests!
+
+## Acknowledgements
+Everything in the `lib` directory is courtesy of [krom](https://github.com/PeterLemon/N64) and is used with permission. Thanks krom!
 
 ## TODO
 - "Fuzzer" tests testing large numbers of cases
