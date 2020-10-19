@@ -129,9 +129,8 @@ test4_failed:
       nop
 
 test5:
-    li r2, 0xFFFF
-    dsll r2, 16
-    ori r2, 0xFFFF
+    li r1, 0x80000000
+    lwu r2, Uint32Max(r1)
     daddi r2, r2, 1
     beqz r2, test5_failed
       nop
@@ -142,6 +141,9 @@ test5_failed:
     li rtest_failed, 5
     j Complete
       nop
+
+Uint32Max:
+  dw 0xFFFFFFFF
 
 constant PassedTextLength(16)
 PassedText:
