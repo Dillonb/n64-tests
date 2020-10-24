@@ -35,6 +35,7 @@ Start:
       nop
 
 Complete:
+    addi rtest_failed, r0, -1
     include "lib/n64_gfx.inc"
     include "lib/printstring.inc"
     ScreenNTSC(SCREEN_X, SCREEN_Y, BPP32, fb_origin)
