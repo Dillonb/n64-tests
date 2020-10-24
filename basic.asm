@@ -1,6 +1,5 @@
 arch n64.cpu
 endian msb
-output "basic.z64", create
 fill 1052672
 
 origin $00000000
