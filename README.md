@@ -14,7 +14,11 @@ To build, simply run `make` after both of these tools have been placed on the PA
 Run the test, it will most likely pass if your emulator is mature enough to boot games.
 
 #### Young emulators
-If your emulator is very young, you can skip the boot process and start executing the tests by jumping to the PC value specified in the header. This should be `0x80001000`. If at any point the value of r30 changes to a non-zero value, that means the tests have completed their run. If the value is -1, the tests passed! If the value is positive, that will tell you the test that failed.
+If your emulator is very young, you can skip the boot process and start executing the tests by jumping to the PC value specified in the header. This should be `0x80001000`.
+
+One of the things the boot process does is copy 0x100000 bytes from 0x10001000 to 0x00001000. If you're skipping the boot process, you'll need to do this copy manually as well.
+
+If at any point the value of r30 changes to a non-zero value, that means the tests have completed their run. If the value is -1, the tests passed! If the value is positive, that will tell you the test that failed.
 
 ## Acknowledgements
 Everything in the `lib` directory is courtesy of [krom](https://github.com/PeterLemon/N64) and is used with permission. Thanks krom!
