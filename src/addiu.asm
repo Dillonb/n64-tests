@@ -1,6 +1,6 @@
 arch n64.cpu
 endian msb
-fill 1052672
+fill 1052672 // Ensure the file meets the minimum size for a valid N64 ROM
 
 origin $00000000
 base $80000000
@@ -40,11 +40,9 @@ macro scope test_addiu(regarg, immarg, expected, testnum) {
 Start:
     N64_INIT()
     li rtest_failed, 0
-
-    test_addiu($0000000000000000, $0001, $0000000000000001, 1)
-    test_addiu($00000000FFFFFFFE, $0001, $FFFFFFFFFFFFFFFF, 2)
-    test_addiu($0000000000000000, $FFFF, $FFFFFFFFFFFFFFFF, 3)
-
+    la rtemp, RunTests
+    jalr rtemp
+      nop
     // all passed
     j Complete
       nop
@@ -83,3 +81,11 @@ FailedText:
 
 align(4)
 insert FontBlack, "lib/FontBlack8x8.bin"
+
+base $10000000 + pc()
+RunTests:
+    test_addiu($0000000000000000, $0001, $0000000000000001, 1)
+    test_addiu($00000000FFFFFFFE, $0001, $FFFFFFFFFFFFFFFF, 2)
+    test_addiu($0000000000000000, $FFFF, $FFFFFFFFFFFFFFFF, 3)
+    jr ra
+      nop
