@@ -76,11 +76,11 @@ Hang:
     j Hang
       nop
 
-macro immjt(rs, rt) {
+macro immjt(INSTR, rs, rt) {
 ImmJt:
     define i(0)
 
-    // rtemp contains the arg. load address of jump table base into rtemp2, add the
+    // rtemp contains the arg. load address of jump table base into rtemp2, add the offset to jump into the correct spot in the table
     la rtemp2, {#}JtBase
     sll rtemp, rtemp, 4 // multiply by 16
     add rtemp2, rtemp2, rtemp // and add to base of jump table
@@ -91,7 +91,7 @@ ImmJt:
 {#}JtBase:
     while {i} <= $FFFF {
         define p(pc())
-        addiu {rt}, {rs}, {i}
+        {INSTR} {rt}, {rs}, {i}
         jr ra
           nop
           nop
@@ -112,7 +112,7 @@ insert FontBlack, "lib/FontBlack8x8.bin"
 
 base $10000000 + pc()
 
-immjt(ractual, ractual)
+immjt(addiu, ractual, ractual)
 
 RunTests:
     la regargpointer, RegArgs
