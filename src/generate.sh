@@ -8,3 +8,9 @@ function gen_imm {
 }
 
 gen_imm addiu
+gen_imm andi
+gen_imm daddiu
+gen_imm ori
+gen_imm slti
+gen_imm sltiu
+gen_imm xori
