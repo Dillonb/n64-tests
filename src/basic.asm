@@ -16,6 +16,8 @@ constant BYTES_PER_PIXEL(4)
 include "lib/n64.inc"
 include "lib/header.inc"
 insert "lib/bootcode.bin"
+include "lib/n64_gfx.inc"
+include "lib/printstring.inc"
 
 Start:
     N64_INIT()
@@ -34,23 +36,39 @@ Start:
     j Complete
       nop
 
-Complete:
-    addi rtest_failed, r0, -1
-    include "lib/n64_gfx.inc"
-    include "lib/printstring.inc"
+ScreenSetup:
     ScreenNTSC(SCREEN_X, SCREEN_Y, BPP32, fb_origin)
-    bnez rtest_failed, PrintFailed
+    jr ra
+      nop
+
+Complete:
+    bnez rtest_failed, TestsFailed
+      nop
+    addi rtest_failed, r0, -1
+    la r1, ScreenSetup
+    jalr r1
       nop
     j PrintPassed
       nop
+
+TestsFailed:
+    jal ScreenSetup
+      nop
+    j PrintFailed
 
 PrintPassed:
     PrintString(fb_origin, 8, 0, FontBlack, PassedText, PassedTextLength)
     j Hang
       nop
 
+FailedTest:
+    dw $00000000
+
 PrintFailed:
+    la r1, FailedTest
+    sw rtest_failed, 0(r1)
     PrintString(fb_origin, 8, 0, FontBlack, FailedText, FailedTextLength)
+    PrintValue(fb_origin, 120, 0, FontBlack, FailedTest, 3)
     j Hang
       nop
 
@@ -149,9 +167,9 @@ constant PassedTextLength(16)
 PassedText:
     db "Passed all tests!"
 
-constant FailedTextLength(28)
+constant FailedTextLength(13)
 FailedText:
-    db "Failed tests! Check $s8 (r30)"
+    db "Failed test 0x"
 
 align(4)
 insert FontBlack, "lib/FontBlack8x8.bin"
