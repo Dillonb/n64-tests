@@ -9,6 +9,12 @@ constant rtest_failed(30)
 constant rtemp(2)
 constant ractual(3)
 constant rexpected(4)
+constant rtemp2(5)
+constant regargpointer(6)
+constant expectedpointer(7)
+constant immpointer(8)
+constant rtotalcases(9)
+constant rtestedcases(10)
 constant fb_origin($A0100000)
 constant SCREEN_X(320)
 constant SCREEN_Y(240)
@@ -20,31 +26,11 @@ include "lib/n64.inc"
 include "lib/header.inc"
 insert "lib/bootcode.bin"
 
-// warning: if editing this, keep the total size a multiple of 64 bits to avoid wasting space (even number of instructions)
-macro scope test_addiu(regarg, immarg, expected, testnum) {
-  la rtemp, {#}Values
-  ld ractual, 0(rtemp)
-  ld rexpected, 8(rtemp)
-
-  addi ractual, ractual, {immarg}
-  beq rexpected, ractual, {#}AfterValues
-    nop
-  li rtest_failed, {testnum}
-  align(8)
-{#}Values:
-  dd {regarg}
-  dd {expected}
-{#}AfterValues:
-}
-
 Start:
     N64_INIT()
     li rtest_failed, 0
     la rtemp, RunTests
-    jalr rtemp
-      nop
-    // all passed
-    j Complete
+    jr rtemp
       nop
 
 Complete:
@@ -71,6 +57,29 @@ Hang:
     j Hang
       nop
 
+macro immjt(rs, rt) {
+ImmJt:
+    define i(0)
+
+    // rtemp contains the arg. load address of jump table base into rtemp2, add the
+    la rtemp2, {#}JtBase
+    sll rtemp, rtemp, 4 // multiply by 16
+    add rtemp2, rtemp2, rtemp // and add to base of jump table
+
+    jr rtemp2
+      nop
+
+{#}JtBase:
+    while {i} <= $FFFF {
+        define p(pc())
+        addiu {rt}, {rs}, {i}
+        jr ra
+          nop
+          nop
+        evaluate i({i} + 1)
+    }
+}
+
 constant PassedTextLength(16)
 PassedText:
     db "Passed all tests!"
@@ -83,9 +92,49 @@ align(4)
 insert FontBlack, "lib/FontBlack8x8.bin"
 
 base $10000000 + pc()
+
+immjt(ractual, ractual)
+
 RunTests:
-    test_addiu($0000000000000000, $0001, $0000000000000001, 1)
-    test_addiu($00000000FFFFFFFE, $0001, $FFFFFFFFFFFFFFFF, 2)
-    test_addiu($0000000000000000, $FFFF, $FFFFFFFFFFFFFFFF, 3)
-    jr ra
+    la regargpointer, RegArgs
+    la expectedpointer, Expected
+    la immpointer, ImmArgs
+    la rtemp, NumCases
+    lw rtotalcases, 0(rtemp)
+    li rtestedcases, 0
+TestLoop:
+    lhu rtemp, 0(immpointer)
+    ld ractual, 0(regargpointer)
+    ld rexpected, 0(expectedpointer)
+
+    la rtemp2, ImmJt
+    jalr rtemp2
       nop
+
+    beq ractual, rexpected, TestSuccess
+      nop
+
+    // test index + 1
+    addiu rtest_failed, rtestedcases, 1
+    la rtemp, PrintFailed
+    jr rtemp
+      nop
+
+TestSuccess:
+    addiu immpointer, immpointer, 2
+    addiu regargpointer, regargpointer, 8
+    addiu expectedpointer, expectedpointer, 8
+    addiu rtestedcases, rtestedcases, 1
+
+
+    slt rtemp, rtestedcases, rtotalcases
+    bnez rtemp, TestLoop
+      nop
+
+    // all passed
+    j Complete
+      nop
+
+include "./cases/addiu.inc"
+
+print ImmArgs
