@@ -55,6 +55,7 @@ TestsFailed:
     jal ScreenSetup
       nop
     j PrintFailed
+      nop
 
 PrintPassed:
     PrintString(fb_origin, 8, 0, FontBlack, PassedText, PassedTextLength)
