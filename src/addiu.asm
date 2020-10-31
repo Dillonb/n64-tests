@@ -1,5 +1,5 @@
-#WARNING: This file was automatically generated from a template, do not edit by hand!
-#Edit IMMEDIATE.tmpl and run generate.sh instead!
+// WARNING: This file was automatically generated from a template, do not edit by hand!
+// Edit IMMEDIATE.tmpl and run generate.sh instead!
 arch n64.cpu
 endian msb
 fill 1052672 // Ensure the file meets the minimum size for a valid N64 ROM
