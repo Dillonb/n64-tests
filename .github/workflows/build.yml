@@ -33,6 +33,7 @@ jobs:
 
       - name: Collect files
         run: |
+          mkdir -p upload
           mv build/src/*.z64 upload
 
       - name: Upload files
