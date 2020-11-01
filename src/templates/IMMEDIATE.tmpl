@@ -23,12 +23,12 @@ constant CHAR_X(8)
 constant CHAR_Y(8)
 constant BYTES_PER_PIXEL(4)
 
-include "lib/n64.inc"
-include "lib/header.inc"
-insert "lib/bootcode.bin"
-include "lib/n64_gfx.inc"
-include "lib/printstring.inc"
-include "lib/immjt.inc"
+include "../lib/n64.inc"
+include "../lib/header.inc"
+insert "../lib/bootcode.bin"
+include "../lib/n64_gfx.inc"
+include "../lib/printstring.inc"
+include "../lib/immjt.inc"
 
 Start:
     N64_INIT()
@@ -87,11 +87,11 @@ FailedText:
     db "Failed test 0x"
 
 align(4)
-insert FontBlack, "lib/FontBlack8x8.bin"
+insert FontBlack, "../lib/FontBlack8x8.bin"
 
 base $10000000 + pc()
 
-immjt(IMM_INSTRUCTION, ractual, ractual)
+immjt({IMM_INSTRUCTION}, ractual, ractual)
 
 RunTests:
     la regargpointer, RegArgs
@@ -131,5 +131,3 @@ TestSuccess:
     // all passed
     j Complete
       nop
-
-include "./cases/IMM_INSTRUCTION.inc"
