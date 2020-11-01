@@ -4,7 +4,7 @@ foreach(asmfile ${asmfiles})
 
     add_custom_command(OUTPUT ${name}.bin
             COMMAND bass ${CMAKE_CURRENT_LIST_DIR}/${name}.asm -o ${name}.bin
-            DEPENDS ${CMAKE_CURRENT_LIST_DIR}/${name}.asm
+            DEPENDS ${CMAKE_CURRENT_LIST_DIR}/${name}.asm ${CMAKE_CURRENT_LIST_DIR}/lib/*
             BYPRODUCTS ${name}.bin
             )
 
