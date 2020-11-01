@@ -1,9 +1,12 @@
 name: Build
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
-  build-linux:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,13 +34,12 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make
 
-      - name: Collect files
-        run: |
-          mkdir -p upload
-          mv build/src/*.z64 upload
-
-      - name: Upload files
-        uses: actions/upload-artifact@master
+      - name: Release
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          name: dillons-n64-tests
-          path: upload
+          - repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          - automatic_release_tag: "latest"
+          - prerelease: true
+          - title: "Latest Development Version"
+          - files: |
+              build/src/*.z64
