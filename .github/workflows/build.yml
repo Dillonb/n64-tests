@@ -1,0 +1,43 @@
+name: Build
+
+on: push
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Setup submodules
+        run: git submodule update --init
+
+      - name: Setup chksum64 and bass
+        run: |
+          mkdir -p tmp
+          cd tmp
+          wget https://raw.githubusercontent.com/DragonMinded/libdragon/trunk/tools/chksum64.c
+          gcc chksum64.c -o chksum64
+          sudo mv chksum64 /bin/
+          git clone https://github.com/ARM9/bass.git
+          cd bass/bass
+          make
+          sudo mv bass /bin/
+
+      - name: Build Tests
+        run: |
+          mkdir -p build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          make
+
+      - name: Collect files
+        run: |
+          mkdir upload
+          mv build/*.z64 upload
+
+      - name: Upload files
+        uses: actions/upload-artifact@master
+        with:
+          name: dillons-n64-tests
+          path: upload
