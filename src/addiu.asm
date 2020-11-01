@@ -115,8 +115,7 @@ TestLoop:
 
     // test index + 1
     addiu rtest_failed, rtestedcases, 1
-    la rtemp, PrintFailed
-    jr rtemp
+    j Complete
       nop
 
 TestSuccess:
