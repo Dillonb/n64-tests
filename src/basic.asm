@@ -9,6 +9,7 @@ constant rtest_failed(30)
 constant fb_origin($A0100000)
 constant SCREEN_X(320)
 constant SCREEN_Y(240)
+constant vi_origin($A0100000)
 constant CHAR_X(8)
 constant CHAR_Y(8)
 constant BYTES_PER_PIXEL(4)
@@ -37,7 +38,7 @@ Start:
       nop
 
 ScreenSetup:
-    ScreenNTSC(SCREEN_X, SCREEN_Y, BPP32, fb_origin)
+    ScreenNTSC(SCREEN_X, SCREEN_Y, BPP32, vi_origin)
     jr ra
       nop
 
@@ -58,7 +59,7 @@ TestsFailed:
       nop
 
 PrintPassed:
-    PrintString(fb_origin, 8, 0, FontBlack, PassedText, PassedTextLength)
+    PrintString(fb_origin, 8, 64, FontBlack, PassedText, PassedTextLength)
     j Hang
       nop
 
@@ -68,8 +69,8 @@ FailedTest:
 PrintFailed:
     la r1, FailedTest
     sw rtest_failed, 0(r1)
-    PrintString(fb_origin, 8, 0, FontBlack, FailedText, FailedTextLength)
-    PrintValue(fb_origin, 120, 0, FontBlack, FailedTest, 3)
+    PrintString(fb_origin, 8, 64, FontBlack, FailedText, FailedTextLength)
+    PrintValue(fb_origin, 120, 64, FontBlack, FailedTest, 3)
     j Hang
       nop
 

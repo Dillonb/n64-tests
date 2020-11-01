@@ -61,7 +61,7 @@ TestsFailed:
       nop
 
 PrintPassed:
-    PrintString(fb_origin, 8, 0, FontBlack, PassedText, PassedTextLength)
+    PrintString(fb_origin, 8, 64, FontBlack, PassedText, PassedTextLength)
     j Hang
       nop
 
@@ -71,8 +71,8 @@ FailedTest:
 PrintFailed:
     la rtemp, FailedTest
     sw rtest_failed, 0(rtemp)
-    PrintString(fb_origin, 8, 0, FontBlack, FailedText, FailedTextLength)
-    PrintValue(fb_origin, 120, 0, FontBlack, FailedTest, 3)
+    PrintString(fb_origin, 8, 64, FontBlack, FailedText, FailedTextLength)
+    PrintValue(fb_origin, 120, 64, FontBlack, FailedTest, 3)
     j Hang
       nop
 
@@ -135,5 +135,3 @@ TestSuccess:
       nop
 
 include "./cases/xori.inc"
-
-print ImmArgs
