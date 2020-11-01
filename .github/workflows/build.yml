@@ -33,10 +33,7 @@ jobs:
 
       - name: Collect files
         run: |
-          mkdir upload
-          find
-          mv build/addiu.z64 upload
-          mv build/ori.z64 upload
+          mv build/src/*.z64 upload
 
       - name: Upload files
         uses: actions/upload-artifact@master
