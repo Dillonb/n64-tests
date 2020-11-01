@@ -18,6 +18,7 @@ constant immpointer(8)
 constant rtotalcases(9)
 constant rtestedcases(10)
 constant fb_origin($A0100000)
+constant vi_origin($00100000)
 constant SCREEN_X(320)
 constant SCREEN_Y(240)
 constant CHAR_X(8)
@@ -39,7 +40,7 @@ Start:
       nop
 
 ScreenSetup:
-    ScreenNTSC(SCREEN_X, SCREEN_Y, BPP32, fb_origin)
+    ScreenNTSC(SCREEN_X, SCREEN_Y, BPP32, vi_origin)
     jr ra
       nop
 
