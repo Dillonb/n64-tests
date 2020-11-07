@@ -47,7 +47,14 @@ Start:
 
     // PI_WR_LEN
     la rtemp2, (CopyEnd - (CopyStart - 1))
-    sw rtemp2, 0xC(rtemp)
+    sw rtemp2, 0xC(rtemp) // Starts DMA
+
+WaitPIDMA:
+    // Wait for DMA to complete
+    lw rtemp2, 0x10(rtemp) // PI_STATUS
+    andi rtemp2, rtemp2, 1
+    bnez rtemp2, WaitPIDMA
+      nop
 
     la rtemp, RunTests
     jr rtemp
