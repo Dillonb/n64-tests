@@ -33,9 +33,28 @@ include "../lib/immjt.inc"
 Start:
     N64_INIT()
     li rtest_failed, 0
+
+    // PI regs base address
+    li rtemp, 0xA4600000
+
+    // PI_DRAM_ADDR
+    la rtemp2, (CopyStart - 0xA0000000) // Subtract 0xA0000000 to get RDRAM address
+    sw rtemp2, 0(rtemp)
+
+    // PI_CART_ADDR
+    la rtemp2, (CopyStart - 0x90000000) // Subtract (0xA0000000 - 0x10000000) to get cart address
+    sw rtemp2, 4(rtemp)
+
+    // PI_WR_LEN
+    la rtemp2, (CopyEnd - (CopyStart - 1))
+    sw rtemp2, 0xC(rtemp)
+
     la rtemp, RunTests
     jr rtemp
       nop
+
+// uncached region
+base $20000000 + pc()
 
 ScreenSetup:
     ScreenNTSC(SCREEN_X, SCREEN_Y, BPP32, vi_origin)
@@ -88,8 +107,6 @@ FailedText:
 
 align(4)
 insert FontBlack, "../lib/FontBlack8x8.bin"
-
-base $10000000 + pc()
 
 immjt({IMM_INSTRUCTION}, ractual, ractual)
 
