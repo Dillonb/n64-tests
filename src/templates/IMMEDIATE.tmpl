@@ -30,6 +30,11 @@ include "../lib/n64_gfx.inc"
 include "../lib/printstring.inc"
 include "../lib/immjt.inc"
 
+macro dmapad() {
+    nop
+    align(8)
+}
+
 Start:
     N64_INIT()
     li rtest_failed, 0
@@ -46,7 +51,7 @@ Start:
     sw rtemp2, 4(rtemp)
 
     // PI_WR_LEN
-    la rtemp2, (CopyEnd - (CopyStart - 1))
+    la rtemp2, ((CopyEnd - 1) - CopyStart)
     sw rtemp2, 0xC(rtemp) // Starts DMA
 
 WaitPIDMA:

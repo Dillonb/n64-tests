@@ -3,3 +3,4 @@ include "./templates/IMMEDIATE.tmpl"
 CopyStart:
 include "./cases/xori.inc"
 CopyEnd:
+dmapad()
