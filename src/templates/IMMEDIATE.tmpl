@@ -84,6 +84,20 @@ Complete:
       nop
 
 TestsFailed:
+    la rtemp, FailedActual
+    sd ractual, 0(rtemp)
+
+    la rtemp, FailedExpected
+    sd rexpected, 0(rtemp)
+
+    la rtemp, FailedImmediate
+    lh rtemp2, 0(immpointer)
+    sh rtemp2, 0(rtemp)
+
+    la rtemp, FailedRegarg
+    ld rtemp2, 0(regargpointer)
+    sd rtemp2, 0(rtemp)
+
     jal ScreenSetup
       nop
     j PrintFailed
@@ -94,14 +108,51 @@ PrintPassed:
     j Hang
       nop
 
+align(4)
 FailedTest:
     dw $00000000
 
+align(2)
+FailedImmediate:
+    dh $0000
+
+align(8)
+FailedRegarg:
+    dd $0000000000000000
+
+align(8)
+FailedExpected:
+    dd $0000000000000000
+
+align(8)
+FailedActual:
+    dd $0000000000000000
+
+Plus:
+    db "+"
+
+ActualText:
+    db "Actual:"
+
+ExpectedText:
+    db "Expected:"
+
+align(4)
 PrintFailed:
     la rtemp, FailedTest
     sw rtest_failed, 0(rtemp)
     PrintString(fb_origin, 8, 64, FontBlack, FailedText, FailedTextLength)
     PrintValue(fb_origin, 120, 64, FontBlack, FailedTest, 3)
+
+    PrintValue(fb_origin, 8, 72, FontBlack, FailedRegarg, 7)
+    PrintString(fb_origin, 144, 72, FontBlack, Plus, 0)
+    PrintValue(fb_origin, 160, 72, FontBlack, FailedImmediate, 1)
+
+    PrintString(fb_origin, 8, 80, FontBlack, ExpectedText, 8)
+    PrintValue(fb_origin, 88, 80, FontBlack, FailedExpected, 7)
+
+    PrintString(fb_origin, 8, 88, FontBlack, ActualText, 6)
+    PrintValue(fb_origin, 88, 88, FontBlack, FailedActual, 7)
     j Hang
       nop
 
@@ -120,6 +171,7 @@ FailedText:
 align(4)
 insert FontBlack, "../lib/FontBlack8x8.bin"
 
+align(4)
 immjt({IMM_INSTRUCTION}, ractual, ractual)
 
 RunTests:
