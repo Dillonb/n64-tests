@@ -35,7 +35,7 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make
           cd src
-          zip all.zip *.z64
+          zip dillon-n64-tests.zip *.z64
 
       - name: Release
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -46,4 +46,4 @@ jobs:
           title: "Latest Development Version"
           files: |
             build/src/*.z64
-            build/src/all.zip
+            build/src/dillon-n64-tests.zip
