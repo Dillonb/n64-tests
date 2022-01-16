@@ -1,0 +1,218 @@
+arch n64.cpu
+endian msb
+fill 1052672 // Ensure the file meets the minimum size for a valid N64 ROM
+
+origin $00000000
+base $80000000
+
+constant rtest_failed(30)
+constant rtemp(2)
+constant ractual(3)
+constant rexpected(4)
+constant rtemp2(5)
+constant regargpointer(6)
+constant expectedpointer(7)
+constant rsa(8)
+constant rtotalcases(9)
+constant rtestedcases(10)
+constant fb_origin($A0300000)
+constant vi_origin($00300000)
+constant SCREEN_X(320)
+constant SCREEN_Y(240)
+constant CHAR_X(8)
+constant CHAR_Y(8)
+constant BYTES_PER_PIXEL(4)
+
+include "../lib/n64.inc"
+include "../lib/header.inc"
+insert "../lib/bootcode.bin"
+include "../lib/n64_gfx.inc"
+include "../lib/printstring.inc"
+include "../lib/shiftjt.inc"
+
+macro dmapad() {
+    nop
+    align(8)
+}
+
+Start:
+    N64_INIT()
+    li rtest_failed, 0
+
+    // PI regs base address
+    li rtemp, 0xA4600000
+
+    // PI_DRAM_ADDR
+    la rtemp2, (CopyStart - 0xA0000000) // Subtract 0xA0000000 to get RDRAM address
+    sw rtemp2, 0(rtemp)
+
+    // PI_CART_ADDR
+    la rtemp2, (CopyStart - 0x90000000) // Subtract (0xA0000000 - 0x10000000) to get cart address
+    sw rtemp2, 4(rtemp)
+
+    // PI_WR_LEN
+    la rtemp2, ((CopyEnd - 1) - CopyStart)
+    sw rtemp2, 0xC(rtemp) // Starts DMA
+
+WaitPIDMA:
+    // Wait for DMA to complete
+    lw rtemp2, 0x10(rtemp) // PI_STATUS
+    andi rtemp2, rtemp2, 1
+    bnez rtemp2, WaitPIDMA
+      nop
+
+    la rtemp, RunTests
+    jr rtemp
+      nop
+
+// uncached region
+base $20000000 + pc()
+
+ScreenSetup:
+    ScreenNTSC(SCREEN_X, SCREEN_Y, BPP32, vi_origin)
+    jr ra
+      nop
+
+Complete:
+    bnez rtest_failed, TestsFailed
+      nop
+    addi rtest_failed, r0, -1
+    la r1, ScreenSetup
+    jalr r1
+      nop
+    j PrintPassed
+      nop
+
+TestsFailed:
+    la rtemp, FailedActual
+    sd ractual, 0(rtemp)
+
+    la rtemp, FailedExpected
+    sd rexpected, 0(rtemp)
+
+    la rtemp, FailedShiftAmount
+    sh rsa, 0(rtemp)
+
+    la rtemp, FailedRegarg
+    ld rtemp2, 0(regargpointer)
+    sd rtemp2, 0(rtemp)
+
+    jal ScreenSetup
+      nop
+    j PrintFailed
+      nop
+
+PrintPassed:
+    PrintString(fb_origin, 8, 64, FontBlack, PassedText, PassedTextLength)
+    j Hang
+      nop
+
+align(4)
+FailedTest:
+    dw $00000000
+
+align(2)
+FailedShiftAmount:
+    dh $0000
+
+align(8)
+FailedRegarg:
+    dd $0000000000000000
+
+align(8)
+FailedExpected:
+    dd $0000000000000000
+
+align(8)
+FailedActual:
+    dd $0000000000000000
+
+ShiftAmountText:
+    db "sa"
+
+ActualText:
+    db "Actual:"
+
+ExpectedText:
+    db "Expected:"
+
+align(4)
+PrintFailed:
+    la rtemp, FailedTest
+    sw rtest_failed, 0(rtemp)
+    PrintString(fb_origin, 8, 64, FontBlack, FailedText, FailedTextLength)
+    PrintValue(fb_origin, 120, 64, FontBlack, FailedTest, 3)
+
+    PrintValue(fb_origin, 8, 72, FontBlack, FailedRegarg, 7)
+    PrintString(fb_origin, 144, 72, FontBlack, ShiftAmountText, 0)
+    PrintValue(fb_origin, 160, 72, FontBlack, FailedShiftAmount, 1)
+
+    PrintString(fb_origin, 8, 80, FontBlack, ExpectedText, 8)
+    PrintValue(fb_origin, 88, 80, FontBlack, FailedExpected, 7)
+
+    PrintString(fb_origin, 8, 88, FontBlack, ActualText, 6)
+    PrintValue(fb_origin, 88, 88, FontBlack, FailedActual, 7)
+    j Hang
+      nop
+
+Hang:
+    j Hang
+      nop
+
+constant PassedTextLength(16)
+PassedText:
+    db "Passed all tests!"
+
+constant FailedTextLength(13)
+FailedText:
+    db "Failed test 0x"
+
+align(4)
+insert FontBlack, "../lib/FontBlack8x8.bin"
+
+align(4)
+shiftjt({SHIFT_INSTRUCTION}, ractual, ractual)
+
+RunTests:
+    la regargpointer, RegArgs
+    la expectedpointer, Expected
+    li rsa, 0
+    la rtemp, NumCases
+    lw rtotalcases, 0(rtemp)
+    li rtestedcases, 0
+TestLoop:
+    ld ractual, 0(regargpointer)
+    ld rexpected, 0(expectedpointer)
+    addi rtemp, rsa, 0
+    la rtemp2, ShiftJt
+    jalr rtemp2
+      nop
+
+    beq ractual, rexpected, TestSuccess
+      nop
+
+    // test index + 1
+    addiu rtest_failed, rtestedcases, 1
+    j Complete
+      nop
+
+TestSuccess:
+    // Advance to next case
+    addiu expectedpointer, expectedpointer, 8
+    addiu rsa, rsa, 1
+    andi rsa, rsa, $1F
+    // If we haven't tested all 32 shift amounts, just go back to the loop without advancing the regarg pointer
+    bnez rsa, TestLoop
+        nop
+
+    addiu regargpointer, regargpointer, 8
+    addiu rtestedcases, rtestedcases, 1
+
+
+    slt rtemp, rtestedcases, rtotalcases
+    bnez rtemp, TestLoop
+      nop
+
+    // all passed
+    j Complete
+      nop
