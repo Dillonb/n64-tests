@@ -35,6 +35,8 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Release ..
           make
           cd src
+          zip dillon-n64-tests-simpleboot.zip *simpleboot.z64
+          rm *simpleboot.z64
           zip dillon-n64-tests.zip *.z64
 
       - name: Release
@@ -45,5 +47,5 @@ jobs:
           prerelease: true
           title: "Latest Development Version"
           files: |
-            build/src/*.z64
             build/src/dillon-n64-tests.zip
+            build/src/dillon-n64-tests-simpleboot.zip
