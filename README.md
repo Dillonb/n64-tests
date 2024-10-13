@@ -9,7 +9,7 @@ The latest release can always [be found here](https://github.com/Dillonb/n64-tes
 ## Building
 All tests are written for [this fork of bass](https://github.com/ARM9/bass).
 
-They also require [chksum64](https://github.com/DragonMinded/libdragon/blob/trunk/tools/chksum64.c) to boot.
+They also require [chksum64](https://raw.githubusercontent.com/DragonMinded/libdragon/8c4e8505778a5c84e5477394eddfb127ce44d71b/tools/chksum64.c) to boot.
 
 I use CMake as my build system. After placing the above two tools on your path and installing CMake:
 
